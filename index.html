@@ -4,10 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Avaliação do Líquor em Pediatria</title>
-  <!-- Import Google Fonts para Comfortaa -->
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet" />
   <style>
-    /* Para Gotham Book, use local instalado, ou integre sua fonte conforme licença */
     @font-face {
       font-family: 'Gotham Book';
       src: local('Gotham Book'), local('Gotham-Book'),
@@ -18,18 +16,19 @@
     }
 
     body {
-      background-color: rgb(185,224,229); /* Azul claro */
-      color: rgb(40,90,129); /* Azul escuro */
+      background-color: rgb(185,224,229);
+      color: rgb(40,90,129);
       font-family: 'Gotham Book', 'Comfortaa', sans-serif;
       margin: 2rem;
     }
 
     section {
-      background-color: rgb(255,255,255); /* branco */
+      background-color: rgb(255,255,255);
       padding: 1.5rem;
       border-radius: 8px;
-      max-width: 450px;
+      max-width: 460px;
       box-shadow: 0 0 10px rgba(40,90,129,0.1);
+      margin-bottom: 2rem;
     }
 
     h2 {
@@ -92,9 +91,49 @@
       color: rgb(40,90,129);
       font-family: 'Comfortaa', 'Gotham Book', sans-serif;
     }
+
+    /* Bibliografia */
+    #bibliografia {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: rgb(40,90,129);
+      font-family: 'Comfortaa', 'Gotham Book', sans-serif;
+      max-width: 460px;
+      margin: 0 auto 40px auto;
+    }
+
+    #bibliografia h3 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    #bibliografia ul {
+      list-style-type: decimal;
+      padding-left: 20px;
+    }
+
+    #bibliografia ul li {
+      margin-bottom: 5px;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 40px;
+      font-size: 12px;
+      text-align: center;
+      color: #555;
+      border-top: 1px solid #ccc;
+      padding-top: 15px;
+      font-family: 'Comfortaa', Arial, sans-serif;
+      max-width: 460px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 <body>
+
   <section>
     <h2>6. Diagnóstico do Líquor (Pediatria)</h2>
 
@@ -106,17 +145,17 @@
       <option value="sanguinolento">Sanguinolento</option>
     </select>
 
-    <label for="pressaoLiquor">Pressão (cmH₂O):</label>
-    <input type="number" id="pressaoLiquor" min="0" step="any" placeholder="Ex: 10" />
+    <label for="hemaciasLiquor">Hemácias (/mm³):</label>
+    <input type="number" id="hemaciasLiquor" min="0" step="1" placeholder="Ex: 0" value="0" />
+
+    <label for="celulasLiquor">Células (leucócitos/mm³) - antes de ajuste:</label>
+    <input type="number" id="celulasLiquor" min="0" step="1" placeholder="Ex: 5" />
 
     <label for="proteinaLiquor">Proteína (mg/dL):</label>
     <input type="number" id="proteinaLiquor" min="0" step="any" placeholder="Ex: 45" />
 
     <label for="glicoseLiquor">Glicose (mg/dL):</label>
     <input type="number" id="glicoseLiquor" min="0" step="any" placeholder="Ex: 50" />
-
-    <label for="celulasLiquor">Células (leucócitos/mm³):</label>
-    <input type="number" id="celulasLiquor" min="0" step="1" placeholder="Ex: 5" />
 
     <label for="predominioLiquor">Predominância celular:</label>
     <select id="predominioLiquor" required>
@@ -130,19 +169,39 @@
     <div id="resultadoLiquor" class="resultado"></div>
   </section>
 
+  <section id="bibliografia">
+    <h3>Bibliografia</h3>
+    <ul>
+      <li>American Academy of Pediatrics (AAP) Guidelines for Pediatric Meningitis Diagnosis and Management</li>
+      <li>Protocolos de neonatologia e pediatria clínica (ex.: publicações SBP, Ministério da Saúde Brasil)</li>
+      <li>Artigos científicos sobre parâmetros do líquor em pediatria em PubMed e SciELO</li>
+      <li>Protocolos clínicos de manejo de meningite bacteriana, viral e tuberculosa em crianças</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p><strong>Dr. Wevelin Matos</strong> | Pediatria e Cardiologia Pediátrica</p>
+    <p>CRM/SP 196372 | (16) 99783-2383 | @dr.wevelinmatos</p>
+    <p>Ribeirão Preto - SP</p>
+  </footer>
+
   <script>
     function avaliarLiquor() {
       const aparencia = document.getElementById('aparenciaLiquor').value;
-      const pressao = parseFloat(document.getElementById('pressaoLiquor').value);
+      const hemacias = parseInt(document.getElementById('hemaciasLiquor').value) || 0;
+      const celulasBrutas = parseInt(document.getElementById('celulasLiquor').value);
       const proteina = parseFloat(document.getElementById('proteinaLiquor').value);
       const glicose = parseFloat(document.getElementById('glicoseLiquor').value);
-      const celulas = parseInt(document.getElementById('celulasLiquor').value);
       const predom = document.getElementById('predominioLiquor').value;
 
-      if (!aparencia || isNaN(proteina) || isNaN(glicose) || isNaN(celulas) || !predom) {
+      if (!aparencia || isNaN(celulasBrutas) || isNaN(proteina) || isNaN(glicose) || !predom) {
         alert("Por favor, preencha todos os campos corretamente.");
         return;
       }
+
+      // Ajuste da contagem de leucócitos descontando hemácias (1 leucócito para 500 hemácias)
+      const celulasCorrigidas = celulasBrutas - (hemacias / 500);
+      const celulasLiquida = celulasCorrigidas > 0 ? celulasCorrigidas : 0;
 
       let diag = "Líquor normal.";
       let cond = "Conduta: Observação e seguimento clínico.";
@@ -150,19 +209,19 @@
       if (aparencia === "sanguinolento") {
         diag = "Hemorragia subaracnóidea ou líquor sanguinolento (trauma).";
         cond = "Solicitar neuroimagem urgente e avaliação especializada.";
-      } else if (aparencia === "turvo" && predom === "neutrofilos" && glicose < 40 && proteina > 100 && celulas > 100) {
+      } else if (aparencia === "turvo" && predom === "neutrofilos" && glicose < 40 && proteina > 100 && celulasLiquida > 100) {
         diag = "Meningite bacteriana provável.";
         cond = "Iniciar antibioticoterapia empírica intravenosa imediata e manejo hospitalar.";
-      } else if (aparencia === "claro" && predom === "linfocitos" && glicose >= 40 && celulas < 100) {
+      } else if (aparencia === "claro" && predom === "linfocitos" && glicose >= 40 && celulasLiquida < 100) {
         diag = "Meningite viral provável.";
         cond = "Suporte clínico, hidratação e observação; antivirais se indicados.";
       } else if (aparencia === "claro" && predom === "linfocitos" && glicose < 40 && proteina > 200) {
         diag = "Meningite tuberculosa provável.";
         cond = "Iniciar esquema específico para tuberculose meníngea conforme protocolo.";
-      } else if (aparencia === "claro" && celulas <= 5 && proteina < 45 && glicose >= 40) {
+      } else if (aparencia === "claro" && celulasLiquida <= 5 && proteina < 45 && glicose >= 40) {
         diag = "Líquor normal.";
         cond = "Nenhuma conduta específica necessária.";
-      } else if (celulas > 5 && predom === "linfocitos" && glicose >= 40) {
+      } else if (celulasLiquida > 5 && predom === "linfocitos" && glicose >= 40) {
         diag = "Processo inflamatório/viral em estágio inicial.";
         cond = "Acompanhamento com suporte clínico.";
       } else {
@@ -170,8 +229,18 @@
         cond = "Investigação complementar e monitoramento clínico.";
       }
 
-      document.getElementById("resultadoLiquor").innerHTML =
-        `<strong>Diagnóstico:</strong> ${diag}<br><strong>Conduta:</strong> ${cond}`;
+      document.getElementById("resultadoLiquor").innerHTML = `
+        <p><strong>Aparência:</strong> ${aparencia}</p>
+        <p><strong>Hemácias (/mm³):</strong> ${hemacias}</p>
+        <p><strong>Células brutas (/mm³):</strong> ${celulasBrutas}</p>
+        <p><strong>Células corrigidas (/mm³):</strong> ${celulasLiquida.toFixed(1)}</p>
+        <p><strong>Proteína (mg/dL):</strong> ${proteina}</p>
+        <p><strong>Glicose (mg/dL):</strong> ${glicose}</p>
+        <p><strong>Predominância celular:</strong> ${predom === "neutrofilos" ? "Neutrófilos" : "Linfócitos"}</p>
+        <hr>
+        <p><strong>Diagnóstico:</strong> ${diag}</p>
+        <p><strong>Conduta:</strong> ${cond}</p>
+      `;
     }
   </script>
 </body>
