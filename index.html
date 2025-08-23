@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Avaliação do Líquor em Pediatria</title>
+  <!-- Import Google Fonts para Comfortaa -->
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet" />
+  <style>
+    /* Para Gotham Book, use local instalado, ou integre sua fonte conforme licença */
+    @font-face {
+      font-family: 'Gotham Book';
+      src: local('Gotham Book'), local('Gotham-Book'),
+           url('path/to/gotham-book.woff2') format('woff2'),
+           url('path/to/gotham-book.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      background-color: rgb(185,224,229); /* Azul claro */
+      color: rgb(40,90,129); /* Azul escuro */
+      font-family: 'Gotham Book', 'Comfortaa', sans-serif;
+      margin: 2rem;
+    }
+
+    section {
+      background-color: rgb(255,255,255); /* branco */
+      padding: 1.5rem;
+      border-radius: 8px;
+      max-width: 450px;
+      box-shadow: 0 0 10px rgba(40,90,129,0.1);
+    }
+
+    h2 {
+      color: rgb(40,90,129);
+      font-family: 'Gotham Book', 'Comfortaa', sans-serif;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 700;
+      color: rgb(40,90,129);
+      font-family: 'Comfortaa', 'Gotham Book', sans-serif;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      font-size: 1rem;
+      border: 2px solid rgb(40,90,129);
+      border-radius: 4px;
+      font-family: 'Comfortaa', 'Gotham Book', sans-serif;
+      color: rgb(40,90,129);
+      background-color: rgb(255,255,255);
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: rgb(185,224,229);
+      outline: none;
+      background-color: rgb(240,248,252);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      background-color: rgb(40,90,129);
+      color: rgb(255,255,255);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Gotham Book', 'Comfortaa', sans-serif;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: rgb(30,70,100);
+    }
+
+    .resultado {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background-color: rgb(185,224,229);
+      border-radius: 6px;
+      font-weight: 700;
+      color: rgb(40,90,129);
+      font-family: 'Comfortaa', 'Gotham Book', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <h2>6. Diagnóstico do Líquor (Pediatria)</h2>
+
+    <label for="aparenciaLiquor">Aparência:</label>
+    <select id="aparenciaLiquor" required>
+      <option value="" disabled selected>Selecione</option>
+      <option value="claro">Claro</option>
+      <option value="turvo">Turvo</option>
+      <option value="sanguinolento">Sanguinolento</option>
+    </select>
+
+    <label for="pressaoLiquor">Pressão (cmH₂O):</label>
+    <input type="number" id="pressaoLiquor" min="0" step="any" placeholder="Ex: 10" />
+
+    <label for="proteinaLiquor">Proteína (mg/dL):</label>
+    <input type="number" id="proteinaLiquor" min="0" step="any" placeholder="Ex: 45" />
+
+    <label for="glicoseLiquor">Glicose (mg/dL):</label>
+    <input type="number" id="glicoseLiquor" min="0" step="any" placeholder="Ex: 50" />
+
+    <label for="celulasLiquor">Células (leucócitos/mm³):</label>
+    <input type="number" id="celulasLiquor" min="0" step="1" placeholder="Ex: 5" />
+
+    <label for="predominioLiquor">Predominância celular:</label>
+    <select id="predominioLiquor" required>
+      <option value="" disabled selected>Selecione</option>
+      <option value="neutrofilos">Neutrófilos</option>
+      <option value="linfocitos">Linfócitos</option>
+    </select>
+
+    <button onclick="avaliarLiquor()">Avaliar Líquor</button>
+
+    <div id="resultadoLiquor" class="resultado"></div>
+  </section>
+
+  <script>
+    function avaliarLiquor() {
+      const aparencia = document.getElementById('aparenciaLiquor').value;
+      const pressao = parseFloat(document.getElementById('pressaoLiquor').value);
+      const proteina = parseFloat(document.getElementById('proteinaLiquor').value);
+      const glicose = parseFloat(document.getElementById('glicoseLiquor').value);
+      const celulas = parseInt(document.getElementById('celulasLiquor').value);
+      const predom = document.getElementById('predominioLiquor').value;
+
+      if (!aparencia || isNaN(proteina) || isNaN(glicose) || isNaN(celulas) || !predom) {
+        alert("Por favor, preencha todos os campos corretamente.");
+        return;
+      }
+
+      let diag = "Líquor normal.";
+      let cond = "Conduta: Observação e seguimento clínico.";
+
+      if (aparencia === "sanguinolento") {
+        diag = "Hemorragia subaracnóidea ou líquor sanguinolento (trauma).";
+        cond = "Solicitar neuroimagem urgente e avaliação especializada.";
+      } else if (aparencia === "turvo" && predom === "neutrofilos" && glicose < 40 && proteina > 100 && celulas > 100) {
+        diag = "Meningite bacteriana provável.";
+        cond = "Iniciar antibioticoterapia empírica intravenosa imediata e manejo hospitalar.";
+      } else if (aparencia === "claro" && predom === "linfocitos" && glicose >= 40 && celulas < 100) {
+        diag = "Meningite viral provável.";
+        cond = "Suporte clínico, hidratação e observação; antivirais se indicados.";
+      } else if (aparencia === "claro" && predom === "linfocitos" && glicose < 40 && proteina > 200) {
+        diag = "Meningite tuberculosa provável.";
+        cond = "Iniciar esquema específico para tuberculose meníngea conforme protocolo.";
+      } else if (aparencia === "claro" && celulas <= 5 && proteina < 45 && glicose >= 40) {
+        diag = "Líquor normal.";
+        cond = "Nenhuma conduta específica necessária.";
+      } else if (celulas > 5 && predom === "linfocitos" && glicose >= 40) {
+        diag = "Processo inflamatório/viral em estágio inicial.";
+        cond = "Acompanhamento com suporte clínico.";
+      } else {
+        diag = "Alterações inespecíficas no líquor.";
+        cond = "Investigação complementar e monitoramento clínico.";
+      }
+
+      document.getElementById("resultadoLiquor").innerHTML =
+        `<strong>Diagnóstico:</strong> ${diag}<br><strong>Conduta:</strong> ${cond}`;
+    }
+  </script>
+</body>
+</html>
