@@ -673,3 +673,272 @@
 </body>
 </html>
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interpretador de Hemograma Pediátrico</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comfortaa&display=swap');
+
+    body {
+      font-family: 'Gotham Book', 'Comfortaa', sans-serif;
+      background-color: rgb(185,224,229);
+      color: rgb(40,90,129);
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      color: rgb(40,90,129);
+      text-align: center;
+    }
+
+    .container {
+      max-width: 720px;
+      background: rgb(255,255,255);
+      border-radius: 8px;
+      padding: 20px;
+      margin: auto;
+      box-shadow: 0 0 8px rgba(40,90,129,0.3);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    select, input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 2px solid rgb(40,90,129);
+      border-radius: 4px;
+      font-size: 1rem;
+      color: rgb(40,90,129);
+      font-family: 'Comfortaa', sans-serif;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      background-color: rgb(40,90,129);
+      color: rgb(185,224,229);
+      font-size: 1.2rem;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: rgb(60,110,140);
+    }
+
+    .result {
+      margin-top: 30px;
+      background-color: rgb(40,90,129);
+      color: rgb(255,255,255);
+      padding: 20px;
+      border-radius: 6px;
+      font-size: 1rem;
+      line-height: 1.4rem;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Interpretador de Hemograma Pediátrico</h1>
+    
+    <label for="ageRange">Faixa Etária</label>
+    <select id="ageRange" required>
+      <option value="">-- Selecione --</option>
+      <option value="newborn">Recém-nascido (0-1 mês)</option>
+      <option value="infant">1 mês a 1 ano</option>
+      <option value="child">2 a 12 anos</option>
+      <option value="adolescent">Adolescente (>12 anos)</option>
+    </select>
+
+    <label for="hb">Hemoglobina (g/dL)</label>
+    <input type="number" step="0.1" id="hb" placeholder="Ex: 13.5" />
+
+    <label for="ht">Hematócrito (%)</label>
+    <input type="number" step="0.1" id="ht" placeholder="Ex: 40" />
+
+    <label for="vcv">VCM (fL)</label>
+    <input type="number" step="0.1" id="vcv" placeholder="Ex: 85" />
+
+    <label for="leuco">Leucócitos (mil/mm³)</label>
+    <input type="number" step="10" id="leuco" placeholder="Ex: 12000" />
+
+    <label for="neutro">Neutrófilos (%)</label>
+    <input type="number" step="0.1" id="neutro" placeholder="Ex: 55" />
+
+    <label for="linfo">Linfócitos (%)</label>
+    <input type="number" step="0.1" id="linfo" placeholder="Ex: 35" />
+
+    <label for="plaquetas">Plaquetas (mil/mm³)</label>
+    <input type="number" step="1000" id="plaquetas" placeholder="Ex: 250000" />
+
+    <button onclick="interpretHemograma()">Interpretar Hemograma</button>
+
+    <div id="result" class="result" aria-live="polite"></div>
+  </div>
+
+  <script>
+    // Valores de referência por faixa etária
+    const referencia = {
+      newborn: {
+        hb: [14, 22],
+        ht: [45, 65],
+        vcm: [92, 120],
+        leuco: [9000, 30000],
+        neutro: [50, 70], // aproximado
+        linfo: [20, 40],
+        plaquetas: [150000, 450000]
+      },
+      infant: {
+        hb: [11, 14],
+        ht: [30, 40],
+        vcm: [72, 84],
+        leuco: [6000, 17500],
+        neutro: [35, 50],
+        linfo: [50, 70], // linfócitos mais altos
+        plaquetas: [150000, 450000]
+      },
+      child: {
+        hb: [11, 14],
+        ht: [35, 45],
+        vcm: [75, 95],
+        leuco: [5000, 15000],
+        neutro: [40, 60],
+        linfo: [30, 50],
+        plaquetas: [150000, 450000]
+      },
+      adolescent: {
+        hb: [12, 16],
+        ht: [36, 48],
+        vcm: [80, 100],
+        leuco: [4500, 11000],
+        neutro: [50, 70],
+        linfo: [20, 40],
+        plaquetas: [150000, 400000]
+      }
+    };
+
+    function checkRange(value, min, max) {
+      return value >= min && value <= max;
+    }
+
+    function interpretHemograma() {
+      const age = document.getElementById('ageRange').value;
+
+      if (!age) {
+        displayResult("Por favor, selecione uma faixa etária.");
+        return;
+      }
+
+      // Inputs
+      let hb = parseFloat(document.getElementById('hb').value);
+      let ht = parseFloat(document.getElementById('ht').value);
+      let vcm = parseFloat(document.getElementById('vcv').value);
+      let leuco = parseInt(document.getElementById('leuco').value);
+      let neutro = parseFloat(document.getElementById('neutro').value);
+      let linfo = parseFloat(document.getElementById('linfo').value);
+      let plaquetas = parseInt(document.getElementById('plaquetas').value);
+
+      if ([hb, ht, vcm, leuco, neutro, linfo, plaquetas].some(v => isNaN(v))) {
+        displayResult("Por favor, preencha todos os campos com valores válidos.");
+        return;
+      }
+
+      const ref = referencia[age];
+
+      let resultados = [];
+
+      // Hemoglobina e Hematócrito - Anemia / Policitemia
+      if (!checkRange(hb, ref.hb[0], ref.hb[1])) {
+        if (hb < ref.hb[0]) {
+          resultados.push("Indicativo de anemia: valores baixos de hemoglobina podem ser causados por deficiências nutricionais, perda sanguínea ou doenças crônicas.");
+          resultados.push("Conduta: Investigar causa da anemia, avaliar ferro, B12, folato; adaptar dieta; considerar tratamento específico.");
+        } else {
+          resultados.push("Hemoglobina elevada (policitemia): pode indicar desidratação ou produção excessiva de glóbulos vermelhos.");
+          resultados.push("Conduta: Avaliação clínica, considerar causas de hipoxia crônica, possível tratamento médico.");
+        }
+      }
+
+      if (!checkRange(ht, ref.ht[0], ref.ht[1])) {
+        if (ht < ref.ht[0]) {
+          resultados.push("Hematócrito baixo reforça anemia.");
+        } else {
+          resultados.push("Hematócrito alto reforça policitemia.");
+        }
+      }
+
+      // VCM - Tipo da anemia
+      if (!checkRange(vcm, ref.vcm[0], ref.vcm[1])) {
+        if (vcm < ref.vcm[0]) {
+          resultados.push("VCM baixo sugere anemia microcítica (ex: deficiência de ferro).");
+        } else {
+          resultados.push("VCM alto sugere anemia macrocítica (ex: deficiência de vitamina B12 ou folato).");
+        }
+      }
+
+      // Leucócitos
+      if (!checkRange(leuco, ref.leuco[0], ref.leuco[1])) {
+        if (leuco < ref.leuco[0]) {
+          resultados.push("Leucopenia: risco aumentado de infecções, pode ser devido a infecções virais ou medicações.");
+          resultados.push("Conduta: Monitorar quadro clínico, investigar causas.");
+        } else {
+          resultados.push("Leucocitose: provável infecção ou inflamação. Avaliar diferencial para melhor diagnóstico.");
+        }
+      }
+
+      // Neutrófilos
+      if (!checkRange(neutro, ref.neutro[0], ref.neutro[1])) {
+        if (neutro < ref.neutro[0]) {
+          resultados.push("Neutropenia: maior risco de infecções bacterianas graves.");
+          resultados.push("Conduta: Avaliação médica urgente, investigar causas.");
+        } else {
+          resultados.push("Neutrofilia: comum em infecções bacterianas ou inflamações agudas.");
+        }
+      }
+
+      // Linfócitos
+      if (!checkRange(linfo, ref.linfo[0], ref.linfo[1])) {
+        if (linfo < ref.linfo[0]) {
+          resultados.push("Linfopenia: pode indicar imunossupressão ou infecções virais.");
+          resultados.push("Conduta: Avaliação imunológica e acompanhamento clínico.");
+        } else {
+          resultados.push("Linfocitose: comum em infecções virais, linfomas ou leucemias.");
+        }
+      }
+
+      // Plaquetas
+      if (!checkRange(plaquetas, ref.plaquetas[0], ref.plaquetas[1])) {
+        if (plaquetas < ref.plaquetas[0]) {
+          resultados.push("Plaquetopenia: risco aumentado de sangramento, pode ser por infecções, doenças autoimunes ou falência medular.");
+          resultados.push("Conduta: Monitorar sinais de sangramento e investigar causas.");
+        } else {
+          resultados.push("Plaquetose: associada a processos inflamatórios, infecciosos ou anemia ferropriva.");
+        }
+      }
+
+      if (resultados.length === 0) {
+        resultados.push("Todos os valores estão dentro da faixa de normalidade para a faixa etária selecionada.");
+      }
+
+      displayResult(resultados.join("\n\n"));
+    }
+
+    function displayResult(text) {
+      document.getElementById('result').innerText = text;
+    }
+  </script>
+</body>
+</html>
+
