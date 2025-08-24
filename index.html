@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>PueriCalc - Dr. Wevelin</title>
+<title>PueriCalc - Ferramentas Pediátricas</title>
 <link href="https://fonts.googleapis.com/css?family=Comfortaa:400,700&display=swap" rel="stylesheet"/>
 <style>
   body {
@@ -14,90 +14,176 @@
   }
   header { text-align: center; margin-bottom: 30px; }
   header img { max-width: 150px; }
-  h2 {
+  h1, h2, h3 {
     color: rgb(40,90,129);
     font-family: 'Comfortaa', Arial, sans-serif;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
-  label {
-    font-family: 'Gotham Book', Arial, sans-serif;
-    font-weight: bold;
-    display: block;
-    margin-top: 15px;
-    color: rgb(40,90,129);
-  }
+  label { font-weight: bold; display: block; margin-top: 10px; color: rgb(40,90,129); }
   input, select {
-    font-family: 'Gotham Book', 'Comfortaa', Arial, sans-serif;
     padding: 10px; width: 100%; margin-top: 5px;
     border-radius: 4px; border: 1px solid #ccc; box-sizing: border-box;
-    background: rgb(185,224,229);
-    color: #2c3e50;
+    background: rgb(185,224,229); color: #2c3e50;
   }
   button {
     margin-top: 20px; padding: 12px; width: 100%;
-    background: rgb(40,90,129);
-    color: white; font-size: 16px;
+    background: rgb(40,90,129); color: white; font-size: 16px;
     font-family: 'Comfortaa', Arial, sans-serif;
     border: none; border-radius: 6px; cursor: pointer;
-    box-shadow: 0 2px 4px rgba(40,90,129,0.1);
   }
   button:hover { background: rgb(185,224,229); color: rgb(40,90,129);}
   table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 30px;
+    width: 100%; border-collapse: collapse; margin-top: 30px;
   }
   th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-    font-family: 'Gotham Book', Arial, sans-serif;
-    vertical-align: middle;
+    border: 1px solid #ccc; padding: 8px; text-align: center; vertical-align: middle;
   }
-  th {
-    background-color: rgb(40,90,129);
-    color: white;
+  th { background-color: rgb(40,90,129); color: white; }
+  .in-range { background-color: #8bc34a; }   
+  .below-range { background-color: #ffc107; } 
+  .above-range { background-color: #f44336; } 
+  .neutral { background-color: #2196f3; color: white; }
+  .resultado, .result { margin-top:15px; padding:10px; border-radius:6px; background:#eef; }
+  section { background:#fff; border-radius:8px; box-shadow:0 0 5px rgba(0,0,0,0.1); padding:20px; margin:30px auto; max-width:720px;}
+  #bibliografia { margin: 40px auto; max-width: 720px; line-height:1.4; }
+  #bibliografia ul { padding-left:20px; list-style-type:decimal; }
+  #bibliografia ul li { margin-bottom: 5px; }
+  footer {
+    margin-top:40px; text-align:center; border-top:1px solid #ccc; padding-top:15px; font-size:12px;
   }
-  .in-range { background-color: #8bc34a; }    /* green */
-  .below-range { background-color: #ffc107; } /* yellow */
-  .above-range { background-color: #f44336; } /* red */
-  .neutral { background-color: #2196f3; color: white; } /* blue */
 </style>
 </head>
 <body>
 
 <header>
   <img src="IMG_4625.png" alt="Logo Dr. Wevelin Matos" />
+  <h1>PueriCalc - Ferramentas Pediátricas</h1>
 </header>
 
-<h2>PueriCalc - Avaliação Bioquímica Pediátrica</h2>
+<!-- Avaliação Bioquímica Pediátrica -->
+<section>
+  <h2>Avaliação Bioquímica Pediátrica</h2>
+  <form id="calcForm">
+    <label>Idade do Paciente:</label>
+    <input type="number" id="anos" placeholder="Anos" min="0" max="18" required />
+    <input type="number" id="meses" placeholder="Meses" min="0" max="11" required />
+    <input type="number" id="dias" placeholder="Dias" min="0" max="30" required />
 
-<form id="calcForm">
-  <label>Idade do Paciente:</label>
-  <input type="number" id="anos" placeholder="Anos" min="0" max="18" required />
-  <input type="number" id="meses" placeholder="Meses" min="0" max="11" required />
-  <input type="number" id="dias" placeholder="Dias" min="0" max="30" required />
+    <h3>Insira os valores dos exames:</h3>
+    <div id="examesInputs"></div>
+    <button type="button" onclick="avaliar()">Avaliar</button>
+  </form>
+  <div id="resultado"></div>
+</section>
 
-  <h3>Insira os valores dos exames:</h3>
+<!-- Avaliação do Líquor -->
+<section>
+  <h2>Diagnóstico do Líquor (Pediatria)</h2>
+  <label for="aparenciaLiquor">Aparência:</label>
+  <select id="aparenciaLiquor">
+    <option disabled selected>Selecione</option>
+    <option value="claro">Claro</option>
+    <option value="turvo">Turvo</option>
+    <option value="sanguinolento">Sanguinolento</option>
+  </select>
+  <label for="hemaciasLiquor">Hemácias (/mm³):</label>
+  <input type="number" id="hemaciasLiquor" value="0" min="0" step="1" />
+  <label for="celulasLiquor">Células (leucócitos/mm³):</label>
+  <input type="number" id="celulasLiquor" min="0" step="1" />
+  <label for="proteinaLiquor">Proteína (mg/dL):</label>
+  <input type="number" id="proteinaLiquor" min="0" step="any" />
+  <label for="glicoseLiquor">Glicose (mg/dL):</label>
+  <input type="number" id="glicoseLiquor" min="0" step="any" />
+  <label for="predominioLiquor">Predominância celular:</label>
+  <select id="predominioLiquor">
+    <option disabled selected>Selecione</option>
+    <option value="neutrofilos">Neutrófilos</option>
+    <option value="linfocitos">Linfócitos</option>
+  </select>
+  <button onclick="avaliarLiquor()">Avaliar Líquor</button>
+  <div id="resultadoLiquor" class="resultado"></div>
+</section>
 
-  <div id="examesInputs"></div>
+<!-- Interpretador de Hemograma -->
+<section>
+  <h2>Interpretador de Hemograma Pediátrico</h2>
+  <label for="ageRange">Faixa Etária</label>
+  <select id="ageRange">
+    <option value="">-- Selecione --</option>
+    <option value="newborn">Recém-nascido (0-1 mês)</option>
+    <option value="infant">1 mês a 1 ano</option>
+    <option value="child">2 a 12 anos</option>
+    <option value="adolescent">Adolescente (&gt;12 anos)</option>
+  </select>
+  <label for="hb">Hemoglobina (g/dL)</label>
+  <input type="number" step="0.1" id="hb" />
+  <label for="ht">Hematócrito (%)</label>
+  <input type="number" step="0.1" id="ht" />
+  <label for="vcv">VCM (fL)</label>
+  <input type="number" step="0.1" id="vcv" />
+  <label for="leuco">Leucócitos (mil/mm³)</label>
+  <input type="number" step="10" id="leuco" />
+  <label for="neutro">Neutrófilos (%)</label>
+  <input type="number" step="0.1" id="neutro" />
+  <label for="linfo">Linfócitos (%)</label>
+  <input type="number" step="0.1" id="linfo" />
+  <label for="plaquetas">Plaquetas (mil/mm³)</label>
+  <input type="number" step="1000" id="plaquetas" />
+  <button onclick="interpretHemograma()">Interpretar Hemograma</button>
+  <div id="result" class="result" aria-live="polite"></div>
+</section>
 
-  <button type="button" onclick="avaliar()">Avaliar</button>
-</form>
+<!-- Diagnóstico Gasométrico -->
+<section>
+  <h2>Diagnóstico Gasométrico Pediátrico</h2>
+  <label for="idade">Idade (anos):</label>
+  <input type="number" id="idade" min="0" max="18" value="5" />
+  <label for="ph">pH:</label>
+  <input type="number" step="0.01" id="ph" value="7.40" />
+  <label for="paco2">PaCO2 (mmHg):</label>
+  <input type="number" step="0.1" id="paco2" value="40" />
+  <label for="hco3">HCO3- (mEq/L):</label>
+  <input type="number" step="0.1" id="hco3" value="24" />
+  <label for="na">Na+ (mEq/L):</label>
+  <input type="number" step="0.1" id="na" value="140" />
+  <label for="cl">Cl- (mEq/L):</label>
+  <input type="number" step="0.1" id="cl" value="104" />
+  <label for="pao2">PaO2 (mmHg) (opcional):</label>
+  <input type="number" step="0.1" id="pao2" />
+  <label for="sato2">SatO2 (%) (opcional):</label>
+  <input type="number" step="0.1" id="sato2" />
+  <label for="lactato">Lactato (mmol/L) (opcional):</label>
+  <input type="number" step="0.1" id="lactato" />
+  <label for="albumina">Albumina (g/dL) (opcional):</label>
+  <input type="number" step="0.1" id="albumina" />
+  <button onclick="diagnosticar()">Diagnosticar</button>
+  <div class="resultado" id="resultadoGasometria"></div>
+</section>
 
-<div class="resultado" id="resultado"></div>
-
-
-  <p><strong>Bibliografia utilizada:</strong></p>
-  <ul style="text-align:left; max-width: 700px; margin: auto; padding-left: 20px;">
+<!-- BIBLIOGRAFIA CONSOLIDADA -->
+<section id="bibliografia">
+  <h2>Bibliografia Utilizada</h2>
+  <ul>
     <li>Gold Analisa Diagnóstica Ltda. Valores de Referência Pediátricos. Belo Horizonte - MG.</li>
     <li>Sumita, N. M.; Loureiro, G. Valores de referência dos exames laboratoriais em pediatria. Observatório FMUSP, 2024.</li>
     <li>PNCQ - Programa Nacional de Controle de Qualidade. Valores normais e críticos em exames laboratoriais.</li>
     <li>Sociedade Brasileira de Pediatria (SBP). Exames complementares mais comuns na prática clínica pediátrica. 2023.</li>
     <li>MD.Saúde. Valores de referência dos principais exames laboratoriais. 2025.</li>
+    <li>American Academy of Pediatrics (AAP). Guidelines for Pediatric Meningitis Diagnosis and Management.</li>
+    <li>Protocolos de neonatologia e pediatria clínica (SBP, Ministério da Saúde).</li>
+    <li>Publicações científicas sobre líquor em pediatria (PubMed, SciELO).</li>
+    <li>Kovesi T. Acid-Base Disorders in Children. UpToDate, 2025.</li>
+    <li>Rose BD, Post TW. Clinical Physiology of Acid-Base and Electrolyte Disorders. 5ª ed. McGraw-Hill, 2001.</li>
+    <li>KDIGO Acute Kidney Injury Work Group. Crit Care. 2013;17(1):204.</li>
+    <li>Schwartz GJ, Muñoz A, et al. J Am Soc Nephrol. 2009;20(3):629-637.</li>
+    <li>Sociedade Brasileira de Pediatria (SBP). Gasometria arterial: conceitos, 2021.</li>
+    <li>Stenberg A, Gerdin B. Pediatr Nephrol. 1990;4(2):242-9.</li>
+    <li>Nunn JF. Applied Respiratory Physiology. 6ª ed. 2012.</li>
   </ul>
+</section>
 
+<!-- RODAPÉ ÚNICO -->
 <footer>
   <p><strong>Dr. Wevelin Matos</strong> | Pediatria e Cardiologia Pediátrica</p>
   <p>CRM/SP 196372 | (16) 99783-2383 | @dr.wevelinmatos</p>
@@ -105,16 +191,15 @@
 </footer>
 
 <script>
-  // Dados completos das faixas com mapeamento da tabela completa fornecida
-  // Cada objeto tem a idade máxima em dias para a faixa etária e os valores min e max
-
+  // ------------------- Avaliação Bioquímica -------------------
+  // Faixas para exames bioquímicos conforme idade (dias)
   const faixas = {
     albumina: [
       { idadeMaxDias: 30, min: null, max: null },
       { idadeMaxDias: 182, min: 2.6, max: 4.3 },
       { idadeMaxDias: 365, min: 2.8, max: 4.6 },
       { idadeMaxDias: 1095, min: 2.8, max: 4.8 },
-      { idadeMaxDias: 4015, min: 2.9, max: 4.7 } // até 11 anos approx
+      { idadeMaxDias: 4015, min: 2.9, max: 4.7 }
     ],
     alt: [
       { idadeMaxDias: 30, min: 20, max: 54 },
@@ -301,7 +386,7 @@
     ],
   };
 
-  // Lista completa de exames para criar inputs e mapear nomes legíveis
+  // Lista e nomes legíveis dos exames
   const examesList = [
     "albumina", "alt", "ast", "bilirrubinaDireta", "bilirrubinaTotal", "calcio",
     "creatinina", "ferritina", "fosfataseAlcalina", "fosforo", "glicose",
@@ -365,7 +450,7 @@
     vitaminaB12: "Vitamina B12 (pg/mL)",
     vitaminaC: "Vitamina C (mg/dL)",
     vitaminaD: "Vitamina D (ng/mL)",
-    vitaminaE: "Vitamina E (mg/L)",
+    vitaminaE: "Vitamina E (mg/L)"
   };
 
   function idadeEmDias(anos, meses, dias) {
@@ -391,7 +476,7 @@
     return { classe: 'in-range', mensagem: `${faixa.min} - ${faixa.max}` };
   }
 
-  // Criar inputs dinamicamente para todos os exames
+  // Criar inputs dinamicamente para exames bioquímicos
   const examesInputsDiv = document.getElementById('examesInputs');
   examesList.forEach(nome => {
     const label = document.createElement('label');
@@ -402,7 +487,7 @@
     input.step = 'any';
     input.id = nome;
     input.name = nome;
-    input.required = false; // Pode deixar não obrigatório e omitir exame se preferir
+    input.required = false;
     examesInputsDiv.appendChild(label);
     examesInputsDiv.appendChild(input);
   });
@@ -431,791 +516,318 @@
     resultadoHtml += `</table>`;
     document.getElementById('resultado').innerHTML = resultadoHtml;
   }
-</script>
 
-</body>
-</html>
+  // ------------------- Avaliação do Líquor -------------------
+  function avaliarLiquor() {
+    const aparencia = document.getElementById('aparenciaLiquor').value;
+    const hemacias = parseInt(document.getElementById('hemaciasLiquor').value) || 0;
+    const celulasBrutas = parseInt(document.getElementById('celulasLiquor').value);
+    const proteina = parseFloat(document.getElementById('proteinaLiquor').value);
+    const glicose = parseFloat(document.getElementById('glicoseLiquor').value);
+    const predom = document.getElementById('predominioLiquor').value;
 
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Avaliação do Líquor em Pediatria</title>
-  <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet" />
-  <style>
-    @font-face {
-      font-family: 'Gotham Book';
-      src: local('Gotham Book'), local('Gotham-Book'),
-           url('path/to/gotham-book.woff2') format('woff2'),
-           url('path/to/gotham-book.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
+    if (!aparencia || isNaN(celulasBrutas) || isNaN(proteina) || isNaN(glicose) || !predom) {
+      alert("Por favor, preencha todos os campos corretamente.");
+      return;
     }
 
-    body {
-      background-color: rgb(185,224,229);
-      color: rgb(40,90,129);
-      font-family: 'Gotham Book', 'Comfortaa', sans-serif;
-      margin: 2rem;
+    const celulasCorrigidas = celulasBrutas - (hemacias / 500);
+    const celulasLiquida = celulasCorrigidas > 0 ? celulasCorrigidas : 0;
+
+    let diag = "Líquor normal.";
+    let cond = "Conduta: Observação e seguimento clínico.";
+
+    if (aparencia === "sanguinolento") {
+      diag = "Hemorragia subaracnóidea ou líquor sanguinolento (trauma).";
+      cond = "Solicitar neuroimagem urgente e avaliação especializada.";
+    } else if (aparencia === "turvo" && predom === "neutrofilos" && glicose < 40 && proteina > 100 && celulasLiquida > 100) {
+      diag = "Meningite bacteriana provável.";
+      cond = "Iniciar antibioticoterapia empírica intravenosa imediata e manejo hospitalar.";
+    } else if (aparencia === "claro" && predom === "linfocitos" && glicose >= 40 && celulasLiquida < 100) {
+      diag = "Meningite viral provável.";
+      cond = "Suporte clínico, hidratação e observação; antivirais se indicados.";
+    } else if (aparencia === "claro" && predom === "linfocitos" && glicose < 40 && proteina > 200) {
+      diag = "Meningite tuberculosa provável.";
+      cond = "Iniciar esquema específico para tuberculose meníngea conforme protocolo.";
+    } else if (aparencia === "claro" && celulasLiquida <= 5 && proteina < 45 && glicose >= 40) {
+      diag = "Líquor normal.";
+      cond = "Nenhuma conduta específica necessária.";
+    } else if (celulasLiquida > 5 && predom === "linfocitos" && glicose >= 40) {
+      diag = "Processo inflamatório/viral em estágio inicial.";
+      cond = "Acompanhamento com suporte clínico.";
+    } else {
+      diag = "Alterações inespecíficas no líquor.";
+      cond = "Investigação complementar e monitoramento clínico.";
     }
 
-    section {
-      background-color: rgb(255,255,255);
-      padding: 1.5rem;
-      border-radius: 8px;
-      max-width: 460px;
-      box-shadow: 0 0 10px rgba(40,90,129,0.1);
-      margin-bottom: 2rem;
+    document.getElementById("resultadoLiquor").innerHTML = `
+      <p><strong>Aparência:</strong> ${aparencia}</p>
+      <p><strong>Hemácias (/mm³):</strong> ${hemacias}</p>
+      <p><strong>Células brutas (/mm³):</strong> ${celulasBrutas}</p>
+      <p><strong>Células corrigidas (/mm³):</strong> ${celulasLiquida.toFixed(1)}</p>
+      <p><strong>Proteína (mg/dL):</strong> ${proteina}</p>
+      <p><strong>Glicose (mg/dL):</strong> ${glicose}</p>
+      <p><strong>Predominância celular:</strong> ${predom === "neutrofilos" ? "Neutrófilos" : "Linfócitos"}</p>
+      <hr>
+      <p><strong>Diagnóstico:</strong> ${diag}</p>
+      <p><strong>Conduta:</strong> ${cond}</p>
+    `;
+  }
+
+  // ------------------- Interpretador de Hemograma -------------------
+  const referencia = {
+    newborn: {
+      hb: [14, 22],
+      ht: [45, 65],
+      vcm: [92, 120],
+      leuco: [9000, 30000],
+      neutro: [50, 70],
+      linfo: [20, 40],
+      plaquetas: [150000, 450000]
+    },
+    infant: {
+      hb: [11, 14],
+      ht: [30, 40],
+      vcm: [72, 84],
+      leuco: [6000, 17500],
+      neutro: [35, 50],
+      linfo: [50, 70],
+      plaquetas: [150000, 450000]
+    },
+    child: {
+      hb: [11, 14],
+      ht: [35, 45],
+      vcm: [75, 95],
+      leuco: [5000, 15000],
+      neutro: [40, 60],
+      linfo: [30, 50],
+      plaquetas: [150000, 450000]
+    },
+    adolescent: {
+      hb: [12, 16],
+      ht: [36, 48],
+      vcm: [80, 100],
+      leuco: [4500, 11000],
+      neutro: [50, 70],
+      linfo: [20, 40],
+      plaquetas: [150000, 400000]
+    }
+  };
+
+  function checkRange(value, min, max) {
+    return value >= min && value <= max;
+  }
+
+  function interpretHemograma() {
+    const age = document.getElementById('ageRange').value;
+    if (!age) {
+      displayResult("Por favor, selecione uma faixa etária.");
+      return;
+    }
+    let hb = parseFloat(document.getElementById('hb').value);
+    let ht = parseFloat(document.getElementById('ht').value);
+    let vcm = parseFloat(document.getElementById('vcv').value);
+    let leuco = parseInt(document.getElementById('leuco').value);
+    let neutro = parseFloat(document.getElementById('neutro').value);
+    let linfo = parseFloat(document.getElementById('linfo').value);
+    let plaquetas = parseInt(document.getElementById('plaquetas').value);
+
+    if ([hb, ht, vcm, leuco, neutro, linfo, plaquetas].some(v => isNaN(v))) {
+      displayResult("Por favor, preencha todos os campos com valores válidos.");
+      return;
     }
 
-    h2 {
-      color: rgb(40,90,129);
-      font-family: 'Gotham Book', 'Comfortaa', sans-serif;
-    }
+    const ref = referencia[age];
+    let resultados = [];
 
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: 700;
-      color: rgb(40,90,129);
-      font-family: 'Comfortaa', 'Gotham Book', sans-serif;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.3rem;
-      font-size: 1rem;
-      border: 2px solid rgb(40,90,129);
-      border-radius: 4px;
-      font-family: 'Comfortaa', 'Gotham Book', sans-serif;
-      color: rgb(40,90,129);
-      background-color: rgb(255,255,255);
-      transition: border-color 0.3s ease;
-    }
-
-    input:focus, select:focus {
-      border-color: rgb(185,224,229);
-      outline: none;
-      background-color: rgb(240,248,252);
-    }
-
-    button {
-      width: 100%;
-      padding: 0.7rem;
-      margin-top: 1.5rem;
-      font-size: 1.1rem;
-      background-color: rgb(40,90,129);
-      color: rgb(255,255,255);
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: 'Gotham Book', 'Comfortaa', sans-serif;
-      font-weight: 700;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: rgb(30,70,100);
-    }
-
-    .resultado {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background-color: rgb(185,224,229);
-      border-radius: 6px;
-      font-weight: 700;
-      color: rgb(40,90,129);
-      font-family: 'Comfortaa', 'Gotham Book', sans-serif;
-    }
-
-    /* Bibliografia */
-    #bibliografia {
-      font-size: 0.9rem;
-      line-height: 1.4;
-      color: rgb(40,90,129);
-      font-family: 'Comfortaa', 'Gotham Book', sans-serif;
-      max-width: 460px;
-      margin: 0 auto 40px auto;
-    }
-
-    #bibliografia h3 {
-      text-align: center;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-
-    #bibliografia ul {
-      list-style-type: decimal;
-      padding-left: 20px;
-    }
-
-    #bibliografia ul li {
-      margin-bottom: 5px;
-    }
-
-    /* Footer */
-    footer {
-      margin-top: 40px;
-      font-size: 12px;
-      text-align: center;
-      color: #555;
-      border-top: 1px solid #ccc;
-      padding-top: 15px;
-      font-family: 'Comfortaa', Arial, sans-serif;
-      max-width: 460px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-  </style>
-</head>
-<body>
-
-  <section>
-    <h2>6. Diagnóstico do Líquor (Pediatria)</h2>
-
-    <label for="aparenciaLiquor">Aparência:</label>
-    <select id="aparenciaLiquor" required>
-      <option value="" disabled selected>Selecione</option>
-      <option value="claro">Claro</option>
-      <option value="turvo">Turvo</option>
-      <option value="sanguinolento">Sanguinolento</option>
-    </select>
-
-    <label for="hemaciasLiquor">Hemácias (/mm³):</label>
-    <input type="number" id="hemaciasLiquor" min="0" step="1" placeholder="Ex: 0" value="0" />
-
-    <label for="celulasLiquor">Células (leucócitos/mm³) - antes de ajuste:</label>
-    <input type="number" id="celulasLiquor" min="0" step="1" placeholder="Ex: 5" />
-
-    <label for="proteinaLiquor">Proteína (mg/dL):</label>
-    <input type="number" id="proteinaLiquor" min="0" step="any" placeholder="Ex: 45" />
-
-    <label for="glicoseLiquor">Glicose (mg/dL):</label>
-    <input type="number" id="glicoseLiquor" min="0" step="any" placeholder="Ex: 50" />
-
-    <label for="predominioLiquor">Predominância celular:</label>
-    <select id="predominioLiquor" required>
-      <option value="" disabled selected>Selecione</option>
-      <option value="neutrofilos">Neutrófilos</option>
-      <option value="linfocitos">Linfócitos</option>
-    </select>
-
-    <button onclick="avaliarLiquor()">Avaliar Líquor</button>
-
-    <div id="resultadoLiquor" class="resultado"></div>
-  </section>
-
-  <section id="bibliografia">
-    <h3>Bibliografia</h3>
-    <ul>
-      <li>American Academy of Pediatrics (AAP) Guidelines for Pediatric Meningitis Diagnosis and Management</li>
-      <li>Protocolos de neonatologia e pediatria clínica (ex.: publicações SBP, Ministério da Saúde Brasil)</li>
-      <li>Artigos científicos sobre parâmetros do líquor em pediatria em PubMed e SciELO</li>
-      <li>Protocolos clínicos de manejo de meningite bacteriana, viral e tuberculosa em crianças</li>
-    </ul>
-  </section>
-
-  <footer>
-    <p><strong>Dr. Wevelin Matos</strong> | Pediatria e Cardiologia Pediátrica</p>
-    <p>CRM/SP 196372 | (16) 99783-2383 | @dr.wevelinmatos</p>
-    <p>Ribeirão Preto - SP</p>
-  </footer>
-
-  <script>
-    function avaliarLiquor() {
-      const aparencia = document.getElementById('aparenciaLiquor').value;
-      const hemacias = parseInt(document.getElementById('hemaciasLiquor').value) || 0;
-      const celulasBrutas = parseInt(document.getElementById('celulasLiquor').value);
-      const proteina = parseFloat(document.getElementById('proteinaLiquor').value);
-      const glicose = parseFloat(document.getElementById('glicoseLiquor').value);
-      const predom = document.getElementById('predominioLiquor').value;
-
-      if (!aparencia || isNaN(celulasBrutas) || isNaN(proteina) || isNaN(glicose) || !predom) {
-        alert("Por favor, preencha todos os campos corretamente.");
-        return;
-      }
-
-      // Ajuste da contagem de leucócitos descontando hemácias (1 leucócito para 500 hemácias)
-      const celulasCorrigidas = celulasBrutas - (hemacias / 500);
-      const celulasLiquida = celulasCorrigidas > 0 ? celulasCorrigidas : 0;
-
-      let diag = "Líquor normal.";
-      let cond = "Conduta: Observação e seguimento clínico.";
-
-      if (aparencia === "sanguinolento") {
-        diag = "Hemorragia subaracnóidea ou líquor sanguinolento (trauma).";
-        cond = "Solicitar neuroimagem urgente e avaliação especializada.";
-      } else if (aparencia === "turvo" && predom === "neutrofilos" && glicose < 40 && proteina > 100 && celulasLiquida > 100) {
-        diag = "Meningite bacteriana provável.";
-        cond = "Iniciar antibioticoterapia empírica intravenosa imediata e manejo hospitalar.";
-      } else if (aparencia === "claro" && predom === "linfocitos" && glicose >= 40 && celulasLiquida < 100) {
-        diag = "Meningite viral provável.";
-        cond = "Suporte clínico, hidratação e observação; antivirais se indicados.";
-      } else if (aparencia === "claro" && predom === "linfocitos" && glicose < 40 && proteina > 200) {
-        diag = "Meningite tuberculosa provável.";
-        cond = "Iniciar esquema específico para tuberculose meníngea conforme protocolo.";
-      } else if (aparencia === "claro" && celulasLiquida <= 5 && proteina < 45 && glicose >= 40) {
-        diag = "Líquor normal.";
-        cond = "Nenhuma conduta específica necessária.";
-      } else if (celulasLiquida > 5 && predom === "linfocitos" && glicose >= 40) {
-        diag = "Processo inflamatório/viral em estágio inicial.";
-        cond = "Acompanhamento com suporte clínico.";
+    if (!checkRange(hb, ref.hb[0], ref.hb[1])) {
+      if (hb < ref.hb[0]) {
+        resultados.push("Indicativo de anemia: valores baixos de hemoglobina podem ser causados por deficiências nutricionais, perda sanguínea ou doenças crônicas.");
+        resultados.push("Conduta: Investigar causa da anemia, avaliar ferro, B12, folato; adaptar dieta; considerar tratamento específico.");
       } else {
-        diag = "Alterações inespecíficas no líquor.";
-        cond = "Investigação complementar e monitoramento clínico.";
+        resultados.push("Hemoglobina elevada (policitemia): pode indicar desidratação ou produção excessiva de glóbulos vermelhos.");
+        resultados.push("Conduta: Avaliação clínica, considerar causas de hipoxia crônica, possível tratamento médico.");
       }
-
-      document.getElementById("resultadoLiquor").innerHTML = `
-        <p><strong>Aparência:</strong> ${aparencia}</p>
-        <p><strong>Hemácias (/mm³):</strong> ${hemacias}</p>
-        <p><strong>Células brutas (/mm³):</strong> ${celulasBrutas}</p>
-        <p><strong>Células corrigidas (/mm³):</strong> ${celulasLiquida.toFixed(1)}</p>
-        <p><strong>Proteína (mg/dL):</strong> ${proteina}</p>
-        <p><strong>Glicose (mg/dL):</strong> ${glicose}</p>
-        <p><strong>Predominância celular:</strong> ${predom === "neutrofilos" ? "Neutrófilos" : "Linfócitos"}</p>
-        <hr>
-        <p><strong>Diagnóstico:</strong> ${diag}</p>
-        <p><strong>Conduta:</strong> ${cond}</p>
-      `;
     }
-  </script>
-</body>
-</html>
-
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Interpretador de Hemograma Pediátrico</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Comfortaa&display=swap');
-
-    body {
-      font-family: 'Gotham Book', 'Comfortaa', sans-serif;
-      background-color: rgb(185,224,229);
-      color: rgb(40,90,129);
-      margin: 0;
-      padding: 20px;
-    }
-
-    h1, h2 {
-      color: rgb(40,90,129);
-      text-align: center;
-    }
-
-    .container {
-      max-width: 720px;
-      background: rgb(255,255,255);
-      border-radius: 8px;
-      padding: 20px;
-      margin: auto;
-      box-shadow: 0 0 8px rgba(40,90,129,0.3);
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: 600;
-    }
-
-    select, input[type="number"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border: 2px solid rgb(40,90,129);
-      border-radius: 4px;
-      font-size: 1rem;
-      color: rgb(40,90,129);
-      font-family: 'Comfortaa', sans-serif;
-    }
-
-    button {
-      margin-top: 25px;
-      width: 100%;
-      background-color: rgb(40,90,129);
-      color: rgb(185,224,229);
-      font-size: 1.2rem;
-      border: none;
-      padding: 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: rgb(60,110,140);
-    }
-
-    .result {
-      margin-top: 30px;
-      background-color: rgb(40,90,129);
-      color: rgb(255,255,255);
-      padding: 20px;
-      border-radius: 6px;
-      font-size: 1rem;
-      line-height: 1.4rem;
-      white-space: pre-wrap;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Interpretador de Hemograma Pediátrico</h1>
-    
-    <label for="ageRange">Faixa Etária</label>
-    <select id="ageRange" required>
-      <option value="">-- Selecione --</option>
-      <option value="newborn">Recém-nascido (0-1 mês)</option>
-      <option value="infant">1 mês a 1 ano</option>
-      <option value="child">2 a 12 anos</option>
-      <option value="adolescent">Adolescente (>12 anos)</option>
-    </select>
-
-    <label for="hb">Hemoglobina (g/dL)</label>
-    <input type="number" step="0.1" id="hb" placeholder="Ex: 13.5" />
-
-    <label for="ht">Hematócrito (%)</label>
-    <input type="number" step="0.1" id="ht" placeholder="Ex: 40" />
-
-    <label for="vcv">VCM (fL)</label>
-    <input type="number" step="0.1" id="vcv" placeholder="Ex: 85" />
-
-    <label for="leuco">Leucócitos (mil/mm³)</label>
-    <input type="number" step="10" id="leuco" placeholder="Ex: 12000" />
-
-    <label for="neutro">Neutrófilos (%)</label>
-    <input type="number" step="0.1" id="neutro" placeholder="Ex: 55" />
-
-    <label for="linfo">Linfócitos (%)</label>
-    <input type="number" step="0.1" id="linfo" placeholder="Ex: 35" />
-
-    <label for="plaquetas">Plaquetas (mil/mm³)</label>
-    <input type="number" step="1000" id="plaquetas" placeholder="Ex: 250000" />
-
-    <button onclick="interpretHemograma()">Interpretar Hemograma</button>
-
-    <div id="result" class="result" aria-live="polite"></div>
-  </div>
-
-  <script>
-    // Valores de referência por faixa etária
-    const referencia = {
-      newborn: {
-        hb: [14, 22],
-        ht: [45, 65],
-        vcm: [92, 120],
-        leuco: [9000, 30000],
-        neutro: [50, 70], // aproximado
-        linfo: [20, 40],
-        plaquetas: [150000, 450000]
-      },
-      infant: {
-        hb: [11, 14],
-        ht: [30, 40],
-        vcm: [72, 84],
-        leuco: [6000, 17500],
-        neutro: [35, 50],
-        linfo: [50, 70], // linfócitos mais altos
-        plaquetas: [150000, 450000]
-      },
-      child: {
-        hb: [11, 14],
-        ht: [35, 45],
-        vcm: [75, 95],
-        leuco: [5000, 15000],
-        neutro: [40, 60],
-        linfo: [30, 50],
-        plaquetas: [150000, 450000]
-      },
-      adolescent: {
-        hb: [12, 16],
-        ht: [36, 48],
-        vcm: [80, 100],
-        leuco: [4500, 11000],
-        neutro: [50, 70],
-        linfo: [20, 40],
-        plaquetas: [150000, 400000]
+    if (!checkRange(ht, ref.ht[0], ref.ht[1])) {
+      if (ht < ref.ht[0]) {
+        resultados.push("Hematócrito baixo reforça anemia.");
+      } else {
+        resultados.push("Hematócrito alto reforça policitemia.");
       }
+    }
+    if (!checkRange(vcm, ref.vcm[0], ref.vcm[1])) {
+      if (vcm < ref.vcm[0]) {
+        resultados.push("VCM baixo sugere anemia microcítica (ex: deficiência de ferro).");
+      } else {
+        resultados.push("VCM alto sugere anemia macrocítica (ex: deficiência de vitamina B12 ou folato).");
+      }
+    }
+    if (!checkRange(leuco, ref.leuco[0], ref.leuco[1])) {
+      if (leuco < ref.leuco[0]) {
+        resultados.push("Leucopenia: risco aumentado de infecções, pode ser devido a infecções virais ou medicações.");
+        resultados.push("Conduta: Monitorar quadro clínico, investigar causas.");
+      } else {
+        resultados.push("Leucocitose: provável infecção ou inflamação. Avaliar diferencial para melhor diagnóstico.");
+      }
+    }
+    if (!checkRange(neutro, ref.neutro[0], ref.neutro[1])) {
+      if (neutro < ref.neutro[0]) {
+        resultados.push("Neutropenia: maior risco de infecções bacterianas graves.");
+        resultados.push("Conduta: Avaliação médica urgente, investigar causas.");
+      } else {
+        resultados.push("Neutrofilia: comum em infecções bacterianas ou inflamações agudas.");
+      }
+    }
+    if (!checkRange(linfo, ref.linfo[0], ref.linfo[1])) {
+      if (linfo < ref.linfo[0]) {
+        resultados.push("Linfopenia: pode indicar imunossupressão ou infecções virais.");
+        resultados.push("Conduta: Avaliação imunológica e acompanhamento clínico.");
+      } else {
+        resultados.push("Linfocitose: comum em infecções virais, linfomas ou leucemias.");
+      }
+    }
+    if (!checkRange(plaquetas, ref.plaquetas[0], ref.plaquetas[1])) {
+      if (plaquetas < ref.plaquetas[0]) {
+        resultados.push("Plaquetopenia: risco aumentado de sangramento, pode ser por infecções, doenças autoimunes ou falência medular.");
+        resultados.push("Conduta: Monitorar sinais de sangramento e investigar causas.");
+      } else {
+        resultados.push("Plaquetose: associada a processos inflamatórios, infecciosos ou anemia ferropriva.");
+      }
+    }
+
+    if (resultados.length === 0) {
+      resultados.push("Todos os valores estão dentro da faixa de normalidade para a faixa etária selecionada.");
+    }
+
+    displayResult(resultados.join("\n\n"));
+  }
+
+  function displayResult(text) {
+    document.getElementById('result').innerText = text;
+  }
+
+  // ------------------- Diagnóstico Gasométrico -------------------
+  function faixaEtariaRef(idade) {
+    if (idade === 0) return { pH: [7.35,7.45], PaCO2: [32,45], HCO3: [18,24], PaO2: [50,80] };
+    else if (idade >= 1 && idade <= 12) return { pH: [7.35,7.45], PaCO2: [34,39], HCO3: [20,24], PaO2: [80,100] };
+    else return { pH: [7.35,7.45], PaCO2: [35,45], HCO3: [22,26], PaO2: [80,100] };
+  }
+
+  function causasDisturbios(tipo, gap) {
+    const causas = {
+      'acidose metabólica': {
+        elevado: [
+          "Cetoacidose diabética",
+          "Insuficiência renal",
+          "Acidose lática (choque, sepse)",
+          "Intoxicações: salicilatos, metanol, etilenoglicol"
+        ],
+        normal: [
+          "Diarreia",
+          "Acidose tubular renal",
+          "Fístulas pancreaticas ou biliares"
+        ]
+      },
+      'alcalose metabólica': { default: ["Vômitos persistentes", "Uso de diuréticos", "Síndrome de Bartter/Gitelman"] },
+      'acidose respiratória': { default: ["Doenças pulmonares graves (asma, bronquiolite, pneumonia grave)", "Depressão do SNC (intoxicações, convulsões, trauma crânio-encefálico)", "Hipoventilação por fraqueza muscular (distrofias)"] },
+      'alcalose respiratória': { default: ["Hiperpneia (ansiedade, dor, febre)", "Sepse", "Lesão aguda do SNC"] },
+      'distúrbio misto': { default: ["Duas ou mais causas acidobásicas simultâneas (ex: choque com insuficiência renal + hiperventilação)"] }
     };
-
-    function checkRange(value, min, max) {
-      return value >= min && value <= max;
-    }
-
-    function interpretHemograma() {
-      const age = document.getElementById('ageRange').value;
-
-      if (!age) {
-        displayResult("Por favor, selecione uma faixa etária.");
-        return;
-      }
-
-      // Inputs
-      let hb = parseFloat(document.getElementById('hb').value);
-      let ht = parseFloat(document.getElementById('ht').value);
-      let vcm = parseFloat(document.getElementById('vcv').value);
-      let leuco = parseInt(document.getElementById('leuco').value);
-      let neutro = parseFloat(document.getElementById('neutro').value);
-      let linfo = parseFloat(document.getElementById('linfo').value);
-      let plaquetas = parseInt(document.getElementById('plaquetas').value);
-
-      if ([hb, ht, vcm, leuco, neutro, linfo, plaquetas].some(v => isNaN(v))) {
-        displayResult("Por favor, preencha todos os campos com valores válidos.");
-        return;
-      }
-
-      const ref = referencia[age];
-
-      let resultados = [];
-
-      // Hemoglobina e Hematócrito - Anemia / Policitemia
-      if (!checkRange(hb, ref.hb[0], ref.hb[1])) {
-        if (hb < ref.hb[0]) {
-          resultados.push("Indicativo de anemia: valores baixos de hemoglobina podem ser causados por deficiências nutricionais, perda sanguínea ou doenças crônicas.");
-          resultados.push("Conduta: Investigar causa da anemia, avaliar ferro, B12, folato; adaptar dieta; considerar tratamento específico.");
-        } else {
-          resultados.push("Hemoglobina elevada (policitemia): pode indicar desidratação ou produção excessiva de glóbulos vermelhos.");
-          resultados.push("Conduta: Avaliação clínica, considerar causas de hipoxia crônica, possível tratamento médico.");
-        }
-      }
-
-      if (!checkRange(ht, ref.ht[0], ref.ht[1])) {
-        if (ht < ref.ht[0]) {
-          resultados.push("Hematócrito baixo reforça anemia.");
-        } else {
-          resultados.push("Hematócrito alto reforça policitemia.");
-        }
-      }
-
-      // VCM - Tipo da anemia
-      if (!checkRange(vcm, ref.vcm[0], ref.vcm[1])) {
-        if (vcm < ref.vcm[0]) {
-          resultados.push("VCM baixo sugere anemia microcítica (ex: deficiência de ferro).");
-        } else {
-          resultados.push("VCM alto sugere anemia macrocítica (ex: deficiência de vitamina B12 ou folato).");
-        }
-      }
-
-      // Leucócitos
-      if (!checkRange(leuco, ref.leuco[0], ref.leuco[1])) {
-        if (leuco < ref.leuco[0]) {
-          resultados.push("Leucopenia: risco aumentado de infecções, pode ser devido a infecções virais ou medicações.");
-          resultados.push("Conduta: Monitorar quadro clínico, investigar causas.");
-        } else {
-          resultados.push("Leucocitose: provável infecção ou inflamação. Avaliar diferencial para melhor diagnóstico.");
-        }
-      }
-
-      // Neutrófilos
-      if (!checkRange(neutro, ref.neutro[0], ref.neutro[1])) {
-        if (neutro < ref.neutro[0]) {
-          resultados.push("Neutropenia: maior risco de infecções bacterianas graves.");
-          resultados.push("Conduta: Avaliação médica urgente, investigar causas.");
-        } else {
-          resultados.push("Neutrofilia: comum em infecções bacterianas ou inflamações agudas.");
-        }
-      }
-
-      // Linfócitos
-      if (!checkRange(linfo, ref.linfo[0], ref.linfo[1])) {
-        if (linfo < ref.linfo[0]) {
-          resultados.push("Linfopenia: pode indicar imunossupressão ou infecções virais.");
-          resultados.push("Conduta: Avaliação imunológica e acompanhamento clínico.");
-        } else {
-          resultados.push("Linfocitose: comum em infecções virais, linfomas ou leucemias.");
-        }
-      }
-
-      // Plaquetas
-      if (!checkRange(plaquetas, ref.plaquetas[0], ref.plaquetas[1])) {
-        if (plaquetas < ref.plaquetas[0]) {
-          resultados.push("Plaquetopenia: risco aumentado de sangramento, pode ser por infecções, doenças autoimunes ou falência medular.");
-          resultados.push("Conduta: Monitorar sinais de sangramento e investigar causas.");
-        } else {
-          resultados.push("Plaquetose: associada a processos inflamatórios, infecciosos ou anemia ferropriva.");
-        }
-      }
-
-      if (resultados.length === 0) {
-        resultados.push("Todos os valores estão dentro da faixa de normalidade para a faixa etária selecionada.");
-      }
-
-      displayResult(resultados.join("\n\n"));
-    }
-
-    function displayResult(text) {
-      document.getElementById('result').innerText = text;
-    }
-  </script>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Diagnóstico Gasométrico Pediátrico</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  label { display: block; margin: 10px 0 4px; }
-  input[type="number"] { width: 100px; }
-  button { margin-top: 15px; padding: 8px 12px; }
-  .resultado { margin-top: 20px; white-space: pre-wrap; background: #f4f4f4; padding: 10px; border-radius: 5px; }
-  .bibliografia { margin-top: 40px; font-size: 0.9em; color: #555; border-top: 1px solid #ccc; padding-top: 15px; }
-  .bibliografia h3 { margin-bottom: 10px; }
-</style>
-</head>
-<body>
-
-<h2>Diagnóstico Gasométrico Pediátrico</h2>
-
-<label for="idade">Idade (anos):</label>
-<input type="number" id="idade" min="0" max="18" value="5" />
-
-<label for="ph">pH:</label>
-<input type="number" step="0.01" id="ph" value="7.40" />
-
-<label for="paco2">PaCO2 (mmHg):</label>
-<input type="number" step="0.1" id="paco2" value="40" />
-
-<label for="hco3">HCO3- (mEq/L):</label>
-<input type="number" step="0.1" id="hco3" value="24" />
-
-<label for="na">Na+ (mEq/L):</label>
-<input type="number" step="0.1" id="na" value="140" />
-
-<label for="cl">Cl- (mEq/L):</label>
-<input type="number" step="0.1" id="cl" value="104" />
-
-<label for="pao2">PaO2 (mmHg) (opcional):</label>
-<input type="number" step="0.1" id="pao2" />
-
-<label for="sato2">SatO2 (%) (opcional):</label>
-<input type="number" step="0.1" id="sato2" />
-
-<label for="lactato">Lactato (mmol/L) (opcional):</label>
-<input type="number" step="0.1" id="lactato" />
-
-<label for="albumina">Albumina (g/dL) (opcional):</label>
-<input type="number" step="0.1" id="albumina" />
-
-<button onclick="diagnosticar()">Diagnosticar</button>
-
-<div class="resultado" id="resultado"></div>
-
-<div class="bibliografia">
-  <h3>Bibliografia</h3>
-  <ul>
-    <li>Kovesi T. Acid-Base Disorders in Children. In: UpToDate, Post TW (Ed), UpToDate, Waltham, MA. (Consulta em 2025)</li>
-    <li>Rose BD, Post TW. Clinical Physiology of Acid-Base and Electrolyte Disorders. 5th Edition. McGraw-Hill Medical; 2001.</li>
-    <li>Kellum JA, Lameire N; KDIGO Acute Kidney Injury Work Group. Diagnosis, evaluation, and management of acute kidney injury: a KDIGO summary (Part 1). Crit Care. 2013;17(1):204.</li>
-    <li>Schwartz GJ, Muñoz A, Schneider MF, et al. New equations to estimate GFR in children with CKD. J Am Soc Nephrol. 2009;20(3):629-637.</li>
-    <li>Seldin DW, Giebisch G (eds). The Kidney: Physiology and Pathophysiology. Lippincott Williams & Wilkins; 2007.</li>
-    <li>Gasometria arterial: conceitos básicos e interpretação clínica — Sociedade Brasileira de Pediatria (SBP), 2021.</li>
-    <li>Stenberg A, Gerdin B. Acid-base disturbances in children: an overview. Pediatr Nephrol. 1990;4(2):242-9.</li>
-    <li>Abidin NZ, et al. Interpretation of arterial blood gases: a practical approach. Malaysian Journal of Medical Sciences, 2009;16(1):44-50.</li>
-    <li>Nunn JF. Applied Respiratory Physiology. 6th Edition. Butterworth-Heinemann; 2012.</li>
-  </ul>
-</div>
-
-<script>
-/* (Mantém todo o script JavaScript do exemplo anterior aqui, sem alterações) */
-
-function faixaEtariaRef(idade) {
-  if (idade === 0) return { pH: [7.35,7.45], PaCO2: [32,45], HCO3: [18,24], PaO2: [50,80] };
-  else if (idade >= 1 && idade <= 12) return { pH: [7.35,7.45], PaCO2: [34,39], HCO3: [20,24], PaO2: [80,100] };
-  else if (idade >= 13 && idade <= 18) return { pH: [7.35,7.45], PaCO2: [35,45], HCO3: [22,26], PaO2: [80,100] };
-  else return { pH: [7.35,7.45], PaCO2: [35,45], HCO3: [22,26], PaO2: [80,100] };
-}
-
-function causasDisturbios(tipo, gap) {
-  const causas = {
-    'acidose metabólica': {
-      elevado: [
-        "Cetoacidose diabética",
-        "Insuficiência renal",
-        "Acidose lática (choque, sepse)",
-        "Intoxicações: salicilatos, metanol, etilenoglicol"
-      ],
-      normal: [
-        "Diarreia",
-        "Acidose tubular renal",
-        "Fístulas pancreaticas ou biliares"
-      ]
-    },
-    'alcalose metabólica': {
-      default: [
-        "Vômitos persistentes",
-        "Uso de diuréticos",
-        "Síndrome de Bartter/Gitelman"
-      ]
-    },
-    'acidose respiratória': {
-      default: [
-        "Doenças pulmonares graves (asma, bronquiolite, pneumonia grave)",
-        "Depressão do SNC (intoxicações, convulsões, trauma crânio-encefálico)",
-        "Hipoventilação por fraqueza muscular (distrofias)"
-      ]
-    },
-    'alcalose respiratória': {
-      default: [
-        "Hiperpneia (ansiedade, dor, febre)",
-        "Sepse",
-        "Lesão aguda do SNC"
-      ]
-    },
-    'distúrbio misto': {
-      default: [
-        "Duas ou mais causas acidobásicas simultâneas (ex: choque com insuficiência renal + hiperventilação)"
-      ]
-    }
-  };
-  if (tipo === 'acidose metabólica') {
-    return gap > 12 ? causas[tipo].elevado : causas[tipo].normal;
-  } else {
-    return causas[tipo]?.default || ["Causas não específicas/idiopáticas"];
-  }
-}
-
-function alertasClinicos(pH, PaO2) {
-  const alertas = [];
-  if (pH < 7.20) alertas.push("pH < 7,20: Risco de instabilidade cardiovascular. Indicação de internação em UTI pediátrica.");
-  if (PaO2 !== null && PaO2 !== undefined && PaO2 < 60) alertas.push("PaO2 < 60 mmHg: Insuficiência respiratória aguda grave.");
-  return alertas;
-}
-
-function sugestaoExames(tipo, gap) {
-  const exames = {
-    'acidose metabólica': {
-      elevado: [
-        "Solicitar glicemia, corpos cetônicos",
-        "Função renal (ureia/creatinina)",
-        "Dosagem de lactato",
-        "Exames tóxicos: salicilatos, álcool, metanol"
-      ],
-      normal: [
-        "Dosar eletrólitos",
-        "Avaliar função renal tubular",
-        "Exame de fezes"
-      ]
-    },
-    'acidose respiratória': {
-      default: [
-        "Radiografia de tórax",
-        "Gasometria venosa/arterial",
-        "Monitorização respiratória"
-      ]
-    },
-    'alcalose metabólica': {
-      default: [
-        "Dosar eletrólitos",
-        "Avaliar função renal"
-      ]
-    },
-    'distúrbio misto': {
-      default: [
-        "Avaliação multidisciplinar",
-        "Exames complementares conforme suspeitas clínicas"
-      ]
-    }
-  };
-  if (tipo === 'acidose metabólica') {
-    return gap > 12 ? exames[tipo].elevado : exames[tipo].normal;
-  } else {
-    return exames[tipo]?.default || [];
-  }
-}
-
-function diagnosticar() {
-  const idade = parseInt(document.getElementById('idade').value);
-  const pH = parseFloat(document.getElementById('ph').value);
-  const PaCO2 = parseFloat(document.getElementById('paco2').value);
-  const HCO3 = parseFloat(document.getElementById('hco3').value);
-  const Na = parseFloat(document.getElementById('na').value);
-  const Cl = parseFloat(document.getElementById('cl').value);
-  const PaO2input = document.getElementById('pao2').value;
-  const PaO2 = PaO2input ? parseFloat(PaO2input) : null;
-  const SatO2input = document.getElementById('sato2').value;
-  const SatO2 = SatO2input ? parseFloat(SatO2input) : null;
-  const lactatoInput = document.getElementById('lactato').value;
-  const lactato = lactatoInput ? parseFloat(lactatoInput) : null;
-  const albuminaInput = document.getElementById('albumina').value;
-  const albumina = albuminaInput ? parseFloat(albuminaInput) : null;
-
-  const ref = faixaEtariaRef(idade);
-  const gapAnionico = Na - (Cl + HCO3);
-  const gapCorrigido = albumina ? gapAnionico + 2.5 * (4.0 - albumina) : gapAnionico;
-
-  let diagnosticos = [];
-  let causas = [];
-  let alertas = [];
-  let exames = [];
-
-  if (pH < ref.pH[0]) {
-    if (HCO3 < ref.HCO3) {
-      diagnosticos.push(`Acidose metabólica (gap aniônico ${gapCorrigido > 12 ? 'elevado' : 'normal'})`);
-      causas = causasDisturbios('acidose metabólica', gapCorrigido);
-      exames = sugestaoExames('acidose metabólica', gapCorrigido);
-    } else if (PaCO2 > ref.PaCO2[1]) {
-      diagnosticos.push('Acidose respiratória');
-      causas = causasDisturbios('acidose respiratória');
-      exames = sugestaoExames('acidose respiratória');
+    if (tipo === 'acidose metabólica') {
+      return gap > 12 ? causas[tipo].elevado : causas[tipo].normal;
     } else {
-      diagnosticos.push('Distúrbio misto com acidose predominante');
-      causas = causasDisturbios('distúrbio misto');
-      exames = sugestaoExames('distúrbio misto');
+      return causas[tipo]?.default || ["Causas não específicas/idiopáticas"];
     }
-  } else if (pH > ref.pH[1]) {
-    if (HCO3 > ref.HCO3) {
-      diagnosticos.push('Alcalose metabólica');
-      causas = causasDisturbios('alcalose metabólica');
-      exames = sugestaoExames('alcalose metabólica');
-    } else if (PaCO2 < ref.PaCO2[0]) {
-      diagnosticos.push('Alcalose respiratória');
-      causas = causasDisturbios('alcalose respiratória');
-      exames = sugestaoExames('alcalose respiratória');
+  }
+
+  function sugestaoExames(tipo, gap) {
+    const exames = {
+      'acidose metabólica': {
+        elevado: [
+          "Solicitar glicemia, corpos cetônicos",
+          "Função renal (ureia/creatinina)",
+          "Dosagem de lactato",
+          "Exames tóxicos: salicilatos, álcool, metanol"
+        ],
+        normal: [
+          "Dosar eletrólitos",
+          "Avaliar função renal tubular",
+          "Exame de fezes"
+        ]
+      },
+      'acidose respiratória': { default: ["Radiografia de tórax", "Gasometria venosa/arterial", "Monitorização respiratória"] },
+      'alcalose metabólica': { default: ["Dosar eletrólitos", "Avaliar função renal"] },
+      'distúrbio misto': { default: ["Avaliação multidisciplinar", "Exames complementares conforme suspeitas clínicas"] }
+    };
+    if (tipo === 'acidose metabólica') {
+      return gap > 12 ? exames[tipo].elevado : exames[tipo].normal;
     } else {
-      diagnosticos.push('Distúrbio misto com alcalose predominante');
-      causas = causasDisturbios('distúrbio misto');
-      exames = sugestaoExames('distúrbio misto');
+      return exames[tipo]?.default || [];
     }
-  } else {
-    diagnosticos.push('Distúrbio compensado ou múltiplo');
-    causas = ["Compensação completa ou distúrbios mistos"];
-    exames = ["Monitorar, avaliar clínica, repetir gasometria se necessário"];
   }
 
-  diagnosticos.push(`Gap aniônico corrigido: ${gapCorrigido.toFixed(1)} mEq/L`);
-  if (lactato !== null && lactato > 2.0) diagnosticos.push(`Lactato elevado: ${lactato} mmol/L (sugere hipoperfusão ou acidose lática)`);
-  if (PaO2 !== null) diagnosticos.push(`PaO2: ${PaO2} mmHg`);
-  if (SatO2 !== null) diagnosticos.push(`Saturação O2: ${SatO2}%`);
+  function diagnosticar() {
+    const idade = parseInt(document.getElementById('idade').value);
+    const pH = parseFloat(document.getElementById('ph').value);
+    const PaCO2 = parseFloat(document.getElementById('paco2').value);
+    const HCO3 = parseFloat(document.getElementById('hco3').value);
+    const Na = parseFloat(document.getElementById('na').value);
+    const Cl = parseFloat(document.getElementById('cl').value);
+    const PaO2input = document.getElementById('pao2').value;
+    const PaO2 = PaO2input ? parseFloat(PaO2input) : null;
 
-  alertas = alertasClinicos(pH, PaO2);
+    const ref = faixaEtariaRef(idade);
+    const gapAnionico = Na - (Cl + HCO3);
+    const albuminaInput = document.getElementById('albumina').value;
+    const albumina = albuminaInput ? parseFloat(albuminaInput) : null;
+    const gapCorrigido = albumina ? gapAnionico + 2.5 * (4.0 - albumina) : gapAnionico;
 
-  // Personalização pediátrica
-  if (idade < 2 && diagnosticos.some(d => d.toLowerCase().includes('alcalose metabólica'))) {
-    diagnosticos.push("Recém-nascidos e lactentes podem apresentar alcalose metabólica por vômitos ou uso de diuréticos.");
+    let diagnosticos = [];
+    let causas = [];
+    let exames = [];
+    let alertas = [];
+
+    if (pH < ref.pH[0]) {
+      if (HCO3 < ref.HCO3) {
+        diagnosticos.push(`Acidose metabólica (gap aniônico ${gapCorrigido > 12 ? 'elevado' : 'normal'})`);
+        causas = causasDisturbios('acidose metabólica', gapCorrigido);
+        exames = sugestaoExames('acidose metabólica', gapCorrigido);
+      } else if (PaCO2 > ref.PaCO2[1]) {
+        diagnosticos.push('Acidose respiratória');
+        causas = causasDisturbios('acidose respiratória');
+        exames = sugestaoExames('acidose respiratória');
+      } else {
+        diagnosticos.push('Distúrbio misto com acidose predominante');
+        causas = causasDisturbios('distúrbio misto');
+        exames = sugestaoExames('distúrbio misto');
+      }
+    } else if (pH > ref.pH[1]) {
+      if (HCO3 > ref.HCO3) {
+        diagnosticos.push('Alcalose metabólica');
+        causas = causasDisturbios('alcalose metabólica');
+        exames = sugestaoExames('alcalose metabólica');
+      } else if (PaCO2 < ref.PaCO2[0]) {
+        diagnosticos.push('Alcalose respiratória');
+        causas = causasDisturbios('alcalose respiratória');
+        exames = sugestaoExames('alcalose respiratória');
+      } else {
+        diagnosticos.push('Distúrbio misto com alcalose predominante');
+        causas = causasDisturbios('distúrbio misto');
+        exames = sugestaoExames('distúrbio misto');
+      }
+    } else {
+      diagnosticos.push('pH dentro da faixa normal');
+    }
+
+    if (pH < 7.20) alertas.push("pH < 7,20: Risco de instabilidade cardiovascular. Indicação de internação em UTI pediátrica.");
+    if (PaO2 !== null && PaO2 < 60) alertas.push("PaO2 < 60 mmHg: Insuficiência respiratória aguda grave.");
+
+    let resultado = `Diagnóstico(s):\n- ${diagnosticos.join('\n- ')}\n\nCausas possíveis:\n- ${causas.join('\n- ')}\n\nExames sugeridos:\n- ${exames.join('\n- ')}\n\nAlertas Clínicos:\n- ${alertas.length ? alertas.join('\n- ') : "Nenhum alerta clínico."}`;
+
+    document.getElementById('resultadoGasometria').innerText = resultado;
   }
-  if (idade < 18 && diagnosticos.some(d => d.toLowerCase().includes('acidose respiratória'))) {
-    diagnosticos.push("Avaliar causas pulmonares frequentes em pediatria, como bronquiolite e asma.");
-  }
-
-  // Montar texto resultado
-  let resultadoTexto = "Diagnóstico:\n" + diagnosticos.map(d => "- " + d).join("\n");
-  resultadoTexto += "\n\nPossíveis causas:\n" + causas.map(c => "- " + c).join("\n");
-  if (alertas.length > 0) resultadoTexto += "\n\nAlertas clínicos:\n" + alertas.map(a => "- " + a).join("\n");
-  resultadoTexto += "\n\nSugestões de exames:\n" + exames.map(e => "- " + e).join("\n");
-
-  document.getElementById('resultado').textContent = resultadoTexto;
-}
 </script>
 
 </body>
 </html>
-
