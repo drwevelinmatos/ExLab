@@ -219,7 +219,6 @@
 </footer>
 
 <script>
-  // Faixas e dados conforme o código anterior
   const faixas = {
     albumina: [
       { idadeMaxDias: 30, min: null, max: null },
@@ -502,6 +501,22 @@
     return { classe: 'in-range', mensagem: `${faixa.min} - ${faixa.max}` };
   }
 
+  // Criar inputs dinamicamente p/ exames bioquímicos
+  const examesInputsDiv = document.getElementById('examesInputs');
+  examesList.forEach(nome => {
+    const label = document.createElement('label');
+    label.setAttribute('for', nome);
+    label.textContent = examesNomes[nome] || nome;
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.step = 'any';
+    input.id = nome;
+    input.name = nome;
+    input.required = false;
+    examesInputsDiv.appendChild(label);
+    examesInputsDiv.appendChild(input);
+  });
+
   // Avaliação: resultado na mesma linha do exame
   function avaliar() {
     const anos = parseInt(document.getElementById('anos').value) || 0;
@@ -514,7 +529,7 @@
     examesList.forEach(nome => {
       const input = document.getElementById(nome);
       const valor = parseFloat(input.value);
-      if (isNaN(valor)) return; // Ignora exame sem valor inserido
+      if (isNaN(valor)) return;
       const faixa = obterFaixa(nome, idadeTotal);
       const resultado = avaliarValor(valor, faixa);
       resultadoHtml += `<tr>
@@ -528,10 +543,7 @@
     document.getElementById('resultado').innerHTML = resultadoHtml;
   }
 
-  // Resto dos scripts igual ao código anterior, mantidos conforme a última resposta:
-  // AvaliarLiquor, interpretHemograma, diagnosticar
-
-  // AvaliarLiquor:
+  // Avaliar Líquor
   function avaliarLiquor() {
     const aparencia = document.getElementById('aparenciaLiquor').value;
     const hemacias = parseInt(document.getElementById('hemaciasLiquor').value) || 0;
@@ -588,7 +600,7 @@
     `;
   }
 
-  // Interpretador Hemograma
+  // Interpretador de Hemograma
   const referencia = {
     newborn: {
       hb: [14, 22],
