@@ -42,12 +42,23 @@
     font-family: 'Gotham Book', Arial, sans-serif;
   }
   th, td {
-    border: 1px solid #ccc; padding: 8px; text-align: center; vertical-align: middle;
+    border: 1px solid #ccc; padding: 8px; vertical-align: middle;
   }
-  th { background-color: rgb(40,90,129); color: white; }
-  .in-range { background-color: #8bc34a; }   
-  .below-range { background-color: #ffc107; } 
-  .above-range { background-color: #f44336; } 
+  th { background-color: rgb(40,90,129); color: white; text-align:center; }
+  td.nome-exame {
+    text-align: left;
+    font-weight: 600;
+    color: rgb(40,90,129);
+    width: 70%;
+  }
+  td.valor-exame {
+    text-align: right;
+    font-weight: bold;
+    width: 30%;
+  }
+  .in-range { background-color: #8bc34a; color: white; }   
+  .below-range { background-color: #ffc107; color: black; } 
+  .above-range { background-color: #f44336; color: white; } 
   .neutral { background-color: #2196f3; color: white; }
   .resultado, .result { margin-top:15px; padding:10px; border-radius:6px; background:#eef; }
   section { background:#fff; border-radius:8px; box-shadow:0 0 5px rgba(0,0,0,0.1); padding:20px; margin:30px auto; max-width:720px;}
@@ -57,7 +68,6 @@
   footer {
     margin-top:40px; text-align:center; border-top:1px solid #ccc; padding-top:15px; font-size:12px;
   }
-
   /* Inline idade inputs */
   .idade-container {
     display: flex;
@@ -68,16 +78,6 @@
   .idade-container input {
     flex: 1;
   }
-  /* Result inline in same row */
-  .valor-exame {
-    width: 80px;
-    margin-left: 10px;
-    padding: 5px;
-    border-radius: 4px;
-    border: none;
-    font-weight: bold;
-    color: white;
-  }
 </style>
 </head>
 <body>
@@ -87,7 +87,6 @@
   <h1>PueriCalc - Ferramentas Pediátricas</h1>
 </header>
 
-<!-- Avaliação Bioquímica Pediátrica -->
 <section>
   <h2>Avaliação Bioquímica Pediátrica</h2>
   <form id="calcForm">
@@ -97,7 +96,6 @@
       <input type="number" id="meses" placeholder="Meses" min="0" max="11" required />
       <input type="number" id="dias" placeholder="Dias" min="0" max="30" required />
     </div>
-
     <h3>Insira os valores dos exames:</h3>
     <div id="examesInputs"></div>
     <button type="button" onclick="avaliar()">Avaliar</button>
@@ -105,7 +103,6 @@
   <div id="resultado"></div>
 </section>
 
-<!-- Avaliação do Líquor -->
 <section>
   <h2>Diagnóstico do Líquor (Pediatria)</h2>
   <label for="aparenciaLiquor">Aparência:</label>
@@ -133,7 +130,6 @@
   <div id="resultadoLiquor" class="resultado"></div>
 </section>
 
-<!-- Interpretador de Hemograma -->
 <section>
   <h2>Interpretador de Hemograma Pediátrico</h2>
   <label for="ageRange">Faixa Etária</label>
@@ -162,7 +158,6 @@
   <div id="result" class="result" aria-live="polite"></div>
 </section>
 
-<!-- Diagnóstico Gasométrico -->
 <section>
   <h2>Diagnóstico Gasométrico Pediátrico</h2>
   <label for="idade">Idade (anos):</label>
@@ -189,7 +184,6 @@
   <div class="resultado" id="resultadoGasometria"></div>
 </section>
 
-<!-- BIBLIOGRAFIA CONSOLIDADA -->
 <section id="bibliografia">
   <h2>Bibliografia Utilizada</h2>
   <ul>
@@ -211,7 +205,6 @@
   </ul>
 </section>
 
-<!-- RODAPÉ ÚNICO -->
 <footer>
   <p><strong>Dr. Wevelin Matos</strong> | Pediatria e Cardiologia Pediátrica</p>
   <p>CRM/SP 196372 | (16) 99783-2383 | @dr.wevelinmatos</p>
@@ -501,11 +494,10 @@
     return { classe: 'in-range', mensagem: `${faixa.min} - ${faixa.max}` };
   }
 
-  // Criar inputs dinamicamente p/ exames bioquímicos
   const examesInputsDiv = document.getElementById('examesInputs');
   examesList.forEach(nome => {
     const label = document.createElement('label');
-    label.setAttribute('for', nome);
+    label.htmlFor = nome;
     label.textContent = examesNomes[nome] || nome;
     const input = document.createElement('input');
     input.type = 'number';
@@ -517,14 +509,13 @@
     examesInputsDiv.appendChild(input);
   });
 
-  // Avaliação: resultado na mesma linha do exame
   function avaliar() {
     const anos = parseInt(document.getElementById('anos').value) || 0;
     const meses = parseInt(document.getElementById('meses').value) || 0;
     const dias = parseInt(document.getElementById('dias').value) || 0;
     const idadeTotal = idadeEmDias(anos, meses, dias);
 
-    let resultadoHtml = `<table><thead><tr><th>Exame</th><th>Valor Inserido</th><th>Resultado / Faixa Normal</th></tr></thead><tbody>`;
+    let resultadoHtml = `<table><thead><tr><th>Exame</th><th>Valor Inserido</th><th>Faixa Normal</th></tr></thead><tbody>`;
 
     examesList.forEach(nome => {
       const input = document.getElementById(nome);
@@ -532,18 +523,19 @@
       if (isNaN(valor)) return;
       const faixa = obterFaixa(nome, idadeTotal);
       const resultado = avaliarValor(valor, faixa);
-      resultadoHtml += `<tr>
-        <td>${examesNomes[nome] || nome}</td>
-        <td><input type="number" value="${valor}" class="valor-exame ${resultado.classe}" readonly></td>
-        <td>${resultado.mensagem}</td>
-      </tr>`;
+      resultadoHtml += `
+        <tr>
+          <td class="nome-exame">${examesNomes[nome]}</td>
+          <td class="valor-exame ${resultado.classe}">${valor}</td>
+          <td>${resultado.mensagem}</td>
+        </tr>
+      `;
     });
 
     resultadoHtml += `</tbody></table>`;
     document.getElementById('resultado').innerHTML = resultadoHtml;
   }
 
-  // Avaliar Líquor
   function avaliarLiquor() {
     const aparencia = document.getElementById('aparenciaLiquor').value;
     const hemacias = parseInt(document.getElementById('hemaciasLiquor').value) || 0;
@@ -600,7 +592,6 @@
     `;
   }
 
-  // Interpretador de Hemograma
   const referencia = {
     newborn: {
       hb: [14, 22],
@@ -733,7 +724,6 @@
     document.getElementById('result').innerText = text;
   }
 
-  // Diagnóstico Gasométrico
   function faixaEtariaRef(idade) {
     if (idade === 0) return { pH: [7.35,7.45], PaCO2: [32,45], HCO3: [18,24], PaO2: [50,80] };
     else if (idade >= 1 && idade <= 12) return { pH: [7.35,7.45], PaCO2: [34,39], HCO3: [20,24], PaO2: [80,100] };
