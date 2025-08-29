@@ -85,6 +85,10 @@
     <div class="inline-btns">
       <button type="button" onclick="avaliar()">Avaliar</button>
       <button type="button" onclick="limpar()">Limpar</button>
+      <button type="button" onclick="imprimirSessao('bioquimica_resultados')">Imprimir</button>
+    <div id="bioquimica_resultados">
+    <div id="resultado"></div>
+    </div>
     </div>
   </form>
 </section>
@@ -198,8 +202,6 @@
 </footer>
 
 <script>
-/* ---- COLE AQUI INTEIRO O BLOCO JAVASCRIPT DA RESPOSTA ANTERIOR
-   (bioquímica pediátrica — faixas, nomes, funções, criarTabelaExames, avaliar, limpar) ---- */
 // Lista de exames
 const examesList = [
   "albumina","alt","ast","bilirrubinaDireta","bilirrubinaTotal","calcio",
@@ -487,6 +489,31 @@ function limpar() {
     tdValor.className = "valor-exame";
     tdFaixa.textContent = "";
   });
+}
+function imprimirSessao(id) {
+  // Guarda conteúdo completo
+  var conteudo = document.getElementById(id).innerHTML;
+  var estilo = `
+  <style>
+    body { font-family: 'Gotham Book','Comfortaa',Arial,sans-serif; font-size:12px; color:#2c3e50;}
+    table {width:100%; border-collapse:collapse; font-size:12px;}
+    th,td {border:1px solid #ccc; padding:6px;}
+    th {background:rgb(40,90,129); color:white;}
+    td.in-range { background:#8bc34a; color:white;}
+    td.below-range { background:#ffc107; color:black;}
+    td.above-range { background:#f44336; color:white;}
+    td.neutral { background:#2196f3; color:white;}
+    h2,h3 {color:rgb(40,90,129);}
+  </style>`;
+  var w = window.open('', '', 'height=800,width=700');
+  w.document.write('<html><head><title>Resultado para Impressão</title>');
+  w.document.write(estilo);
+  w.document.write('</head><body >');
+  w.document.write(conteudo);
+  w.document.write('</body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(function(){ w.print(); }, 400);
 }
 
 /* --- FUNÇÕES DO LÍQUOR --- */
