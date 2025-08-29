@@ -85,10 +85,7 @@
     <div class="inline-btns">
       <button type="button" onclick="avaliar()">Avaliar</button>
       <button type="button" onclick="limpar()">Limpar</button>
-      <button type="button" onclick="imprimirSessao('bioquimica_resultados')">Imprimir</button>
-    <div id="bioquimica_resultados">
-    <div id="resultado"></div>
-    </div>
+      <button type="button" onclick="imprimirResultados()">Imprimir</button>
     </div>
   </form>
 </section>
@@ -432,8 +429,7 @@ function criarTabelaExames() {
       <td class="nome-exame">${examesNomes[nome]}</td>
       <td class="valor-exame"><input type="number" id="${nome}" name="${nome}" style="width: 90px; font-size: 12px;" step="any" autocomplete="off"></td>
       <td class="faixa-exame" id="faixa-${nome}"></td>
-    </tr>
-    `;
+    </tr>`;
   });
   html += '</tbody></table>';
   document.getElementById('examesTabela').innerHTML = html;
@@ -443,6 +439,7 @@ if (document.getElementById('examesTabela')) criarTabelaExames();
 function idadeEmDias(anos, meses, dias) {
   return (anos || 0) * 365 + (meses || 0) * 30 + (dias || 0);
 }
+
 function obterFaixa(nomeExame, idadeDias) {
   if (!faixas[nomeExame]) return null;
   for (let faixa of faixas[nomeExame]) {
@@ -450,12 +447,14 @@ function obterFaixa(nomeExame, idadeDias) {
   }
   return faixas[nomeExame][faixas[nomeExame].length - 1];
 }
+
 function avaliarValor(valor, faixa) {
   if (!faixa || faixa.min == null || faixa.max == null) return { classe: 'neutral', mensagem: 'Sem faixa definida' };
   if (valor < faixa.min) return { classe: 'below-range', mensagem: `${faixa.min} - ${faixa.max}` };
   if (valor > faixa.max) return { classe: 'above-range', mensagem: `${faixa.min} - ${faixa.max}` };
   return { classe: 'in-range', mensagem: `${faixa.min} - ${faixa.max}` };
 }
+
 function avaliar() {
   const anos = parseInt(document.getElementById('anos').value) || 0;
   const meses = parseInt(document.getElementById('meses').value) || 0;
@@ -477,6 +476,7 @@ function avaliar() {
     tdFaixa.textContent = resultado.mensagem;
   });
 }
+
 function limpar() {
   document.getElementById('anos').value = "";
   document.getElementById('meses').value = "";
@@ -490,30 +490,34 @@ function limpar() {
     tdFaixa.textContent = "";
   });
 }
-function imprimirSessao(id) {
-  // Guarda conteúdo completo
-  var conteudo = document.getElementById(id).innerHTML;
-  var estilo = `
-  <style>
-    body { font-family: 'Gotham Book','Comfortaa',Arial,sans-serif; font-size:12px; color:#2c3e50;}
-    table {width:100%; border-collapse:collapse; font-size:12px;}
-    th,td {border:1px solid #ccc; padding:6px;}
-    th {background:rgb(40,90,129); color:white;}
-    td.in-range { background:#8bc34a; color:white;}
-    td.below-range { background:#ffc107; color:black;}
-    td.above-range { background:#f44336; color:white;}
-    td.neutral { background:#2196f3; color:white;}
-    h2,h3 {color:rgb(40,90,129);}
-  </style>`;
-  var w = window.open('', '', 'height=800,width=700');
-  w.document.write('<html><head><title>Resultado para Impressão</title>');
-  w.document.write(estilo);
-  w.document.write('</head><body >');
-  w.document.write(conteudo);
+
+// Impressão da sessão bioquímica simples (exame por linha com valor e faixa)
+function imprimirResultados() {
+  const anos = parseInt(document.getElementById('anos').value) || 0;
+  const meses = parseInt(document.getElementById('meses').value) || 0;
+  const dias = parseInt(document.getElementById('dias').value) || 0;
+  const idadeTotal = idadeEmDias(anos, meses, dias);
+
+  let textoImpressao = `<h2>Avaliação Bioquímica Pediátrica - Idade: ${anos} anos, ${meses} meses, ${dias} dias</h2><hr><pre style="font-size:12px; font-family:monospace;">`;
+
+  examesList.forEach(nome => {
+    const input = document.getElementById(nome);
+    let valor = input.value.trim();
+    if (valor === "") return; // pula exames sem valor
+    const faixa = obterFaixa(nome, idadeTotal);
+    let faixaStr = faixa && faixa.min != null && faixa.max != null ? `[Ref: ${faixa.min} - ${faixa.max}]` : "[Sem referência]";
+    textoImpressao += `${examesNomes[nome].padEnd(40, ' ')} : ${valor}   ${faixaStr}\n`;
+  });
+
+  textoImpressao += "</pre>";
+
+  const w = window.open('', '', 'height=700,width=600');
+  w.document.write('<html><head><title>Impressão - Avaliação Bioquímica</title></head><body>');
+  w.document.write(textoImpressao);
   w.document.write('</body></html>');
   w.document.close();
   w.focus();
-  setTimeout(function(){ w.print(); }, 400);
+  setTimeout(() => w.print(), 500);
 }
 
 /* --- FUNÇÕES DO LÍQUOR --- */
